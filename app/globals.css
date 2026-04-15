@@ -1,26 +1,31 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Font smoothing ──────────────────────────────────────────── */
+*, *::before, *::after {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f8fafc;
 }
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+
+/* ── Brand text selection ────────────────────────────────────── */
+::selection { background: rgba(130, 168, 164, 0.18); color: #1e293b; }
+
+/* ── Gold glow animation for "Gewonnen" status ───────────────── */
+@keyframes gold-glow {
+  0%   { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); transform: scale(1); }
+  50%  { box-shadow: 0 0 20px 10px rgba(234, 179, 8, 0.2); transform: scale(1.05); }
+  100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); transform: scale(1); }
+}
+.animate-gold { animation: gold-glow 2s infinite ease-in-out; }
+
+/* ── Tabular number rendering ────────────────────────────────── */
+.tabular-nums { font-variant-numeric: tabular-nums; }
