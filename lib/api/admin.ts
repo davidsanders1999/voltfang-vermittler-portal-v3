@@ -3,7 +3,7 @@ import type { AdminOverview, AdminUser, AdminCompany, AdminProject, Angebot } fr
 
 async function invoke(action: string, payload?: Record<string, unknown>) {
   const supabase = createClient();
-  const { data, error } = await supabase.functions.invoke('hubspot-projects', {
+  const { data, error } = await supabase.functions.invoke('hubspot-admin', {
     body: { action, payload },
   });
   if (error) throw error;
@@ -58,7 +58,11 @@ export async function getCompanyDeals(companyHubspotId: number): Promise<AdminPr
 }
 
 export async function getCompanyAngebote(companyHubspotId: number): Promise<Angebot[]> {
-  const data = await invoke('get_angebote', { company_hubspot_id: companyHubspotId });
+  const supabase = createClient();
+  const { data, error } = await supabase.functions.invoke('hubspot-context', {
+    body: { action: 'get_angebote', payload: { company_hubspot_id: companyHubspotId } },
+  });
+  if (error) throw error;
   return data?.angebote ?? [];
 }
 

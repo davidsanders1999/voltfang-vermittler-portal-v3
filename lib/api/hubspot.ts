@@ -87,7 +87,7 @@ function getSupabase() {
 
 export async function getHubSpotContext(targetCompanyId?: string | null) {
   const supabase = getSupabase();
-  const { data, error } = await supabase.functions.invoke('hubspot-projects', {
+  const { data, error } = await supabase.functions.invoke('hubspot-context', {
     body: {
       action: 'get_context',
       ...(targetCompanyId ? { payload: { target_company_id: targetCompanyId } } : {}),
@@ -99,7 +99,7 @@ export async function getHubSpotContext(targetCompanyId?: string | null) {
 
 export async function createHubSpotProject(payload: EdgeProjectPayload) {
   const supabase = getSupabase();
-  const { data, error } = await supabase.functions.invoke('hubspot-projects', {
+  const { data, error } = await supabase.functions.invoke('hubspot-mutations', {
     body: { action: 'create_project', payload },
   });
   if (error) throw error;
@@ -108,7 +108,7 @@ export async function createHubSpotProject(payload: EdgeProjectPayload) {
 
 export async function registerHubSpotPartner(payload: RegisterPartnerPayload) {
   const supabase = getSupabase();
-  const { data, error } = await supabase.functions.invoke('hubspot-projects', {
+  const { data, error } = await supabase.functions.invoke('hubspot-auth', {
     body: { action: 'register_partner', payload },
   });
   if (error) throw error;
@@ -117,7 +117,7 @@ export async function registerHubSpotPartner(payload: RegisterPartnerPayload) {
 
 export async function joinHubSpotPartnerWithInvite(payload: JoinPartnerPayload) {
   const supabase = getSupabase();
-  const { data, error } = await supabase.functions.invoke('hubspot-projects', {
+  const { data, error } = await supabase.functions.invoke('hubspot-auth', {
     body: { action: 'join_partner_with_invite', payload },
   });
   if (error) throw error;
@@ -126,7 +126,7 @@ export async function joinHubSpotPartnerWithInvite(payload: JoinPartnerPayload) 
 
 export async function getHubSpotUserContext() {
   const supabase = getSupabase();
-  const { data, error } = await supabase.functions.invoke('hubspot-projects', {
+  const { data, error } = await supabase.functions.invoke('hubspot-context', {
     body: { action: 'get_user_context' },
   });
   if (error) throw error;
@@ -135,7 +135,7 @@ export async function getHubSpotUserContext() {
 
 export async function getHubSpotAngebote(companyHubspotId: number): Promise<Angebot[]> {
   const supabase = getSupabase();
-  const { data, error } = await supabase.functions.invoke('hubspot-projects', {
+  const { data, error } = await supabase.functions.invoke('hubspot-context', {
     body: { action: 'get_angebote', payload: { company_hubspot_id: companyHubspotId } },
   });
   if (error) throw error;
@@ -144,7 +144,7 @@ export async function getHubSpotAngebote(companyHubspotId: number): Promise<Ange
 
 export async function createHubSpotAngebot(payload: CreateAngebotPayload): Promise<Angebot> {
   const supabase = getSupabase();
-  const { data, error } = await supabase.functions.invoke('hubspot-projects', {
+  const { data, error } = await supabase.functions.invoke('hubspot-mutations', {
     body: {
       action: 'create_angebot',
       payload: {
