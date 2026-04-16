@@ -9,7 +9,8 @@ import {
   LogOut
 } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { usePortalData } from '@/hooks/usePortalData';
+import { useImpersonation } from '@/contexts/ImpersonationContext';
 
 interface TopbarProps {
   onSidebarToggle: () => void;
@@ -25,11 +26,13 @@ const viewLabels: Record<string, string> = {
 
 export default function Topbar({ onSidebarToggle }: TopbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showLogoutHint, setShowLogoutHint] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
-  const { userProfile, userCompany } = useAuth();
+  const { userProfile, userCompany } = usePortalData();
+  const { impersonating } = useImpersonation();
 
   // Derive page title from pathname
   const pageTitle = Object.entries(viewLabels).find(([path]) =>
@@ -48,6 +51,11 @@ export default function Topbar({ onSidebarToggle }: TopbarProps) {
   }, []);
 
   const handleLogout = async () => {
+    if (impersonating) {
+      setShowLogoutHint(true);
+      setTimeout(() => setShowLogoutHint(false), 3000);
+      return;
+    }
     setIsMenuOpen(false);
     await supabase.auth.signOut();
     router.push('/login');
@@ -120,6 +128,14 @@ export default function Topbar({ onSidebarToggle }: TopbarProps) {
                 </div>
                 Abmelden
               </button>
+
+              {showLogoutHint && (
+                <div className="mt-1.5 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl">
+                  <p className="text-[10px] font-medium text-amber-700 leading-snug">
+                    Die Abmeldung ist nur über das Admin Panel möglich. Nutzen Sie den Button im roten Banner oben.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}

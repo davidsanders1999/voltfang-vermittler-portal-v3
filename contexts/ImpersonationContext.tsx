@@ -16,10 +16,32 @@ interface ImpersonationContextValue {
 
 const ImpersonationContext = createContext<ImpersonationContextValue | undefined>(undefined);
 
+const STORAGE_KEY = 'impersonation_state';
+
+function saveToStorage(user: User, company: UserCompany | null) {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ user, company }));
+  } catch { /* ignore */ }
+}
+
+function loadFromStorage(): { user: User; company: UserCompany | null } | null {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return null;
+}
+
+function clearStorage() {
+  try {
+    sessionStorage.removeItem(STORAGE_KEY);
+  } catch { /* ignore */ }
+}
+
 export function ImpersonationProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [impersonatedUser, setImpersonatedUser] = useState<User | null>(null);
-  const [impersonatedCompany, setImpersonatedCompany] = useState<UserCompany | null>(null);
+  const [impersonatedUser, setImpersonatedUser] = useState<User | null>(() => loadFromStorage()?.user ?? null);
+  const [impersonatedCompany, setImpersonatedCompany] = useState<UserCompany | null>(() => loadFromStorage()?.company ?? null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const startImpersonation = useCallback((user: AdminUser) => {
@@ -61,6 +83,7 @@ export function ImpersonationProvider({ children }: { children: React.ReactNode 
       }
     } catch { /* ignore */ }
     setImpersonatedCompany(foundCompany);
+    saveToStorage(asUser, foundCompany);
 
     router.push('/dashboard');
   }, [router]);
@@ -68,6 +91,7 @@ export function ImpersonationProvider({ children }: { children: React.ReactNode 
   const stopImpersonation = useCallback(() => {
     setImpersonatedUser(null);
     setImpersonatedCompany(null);
+    clearStorage();
     router.push('/uebersicht');
   }, [router]);
 

@@ -58,9 +58,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUserCompany(null);
         setAuthStatus('authenticated');
         // Redirect admin to admin panel if on login or portal routes
+        // But NOT when impersonation is active (admin viewing portal as a user)
+        const isImpersonating = !!sessionStorage.getItem('impersonation_state');
         const adminPaths = ['/uebersicht', '/unternehmen', '/nutzer', '/admin-projekte', '/admin-angebote'];
         const isOnAdminPage = adminPaths.some((p) => currentPath.startsWith(p));
-        if (!isOnAdminPage) {
+        if (!isOnAdminPage && !isImpersonating) {
           router.push('/uebersicht');
         }
         return;

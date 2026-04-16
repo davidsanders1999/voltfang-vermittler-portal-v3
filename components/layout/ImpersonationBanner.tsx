@@ -19,7 +19,7 @@ export default function ImpersonationBanner({ userName, onExit, onRefresh }: Imp
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 h-[52px] bg-red-600 flex items-center justify-between px-4 shadow-md">
+    <div className="fixed top-0 left-0 right-0 z-[100] h-[52px] bg-red-600 flex items-center justify-between px-4 shadow-md">
       <span className="text-white text-xs font-medium">
         Simulierte Portal-Ansicht von <strong>{userName}</strong> — Sie sind im Admin-Modus
       </span>

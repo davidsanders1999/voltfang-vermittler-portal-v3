@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { usePortalData } from '@/hooks/usePortalData';
+import { useImpersonation } from '@/contexts/ImpersonationContext';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { userProfile, userCompany } = usePortalData();
+  const { impersonating } = useImpersonation();
 
   const partnerType = userCompany?.partnerType;
   const menuItems = partnerType === 'Vertriebspartner' ? vertriebspartnerMenu : vermittlerMenu;
@@ -42,7 +44,8 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
   };
 
   const sidebarClasses = `
-    fixed inset-y-0 left-0 z-50 w-60 text-slate-300 transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
+    fixed left-0 z-50 w-60 text-slate-300 transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:top-0 lg:h-full
+    ${impersonating ? 'top-[52px] h-[calc(100vh-52px)]' : 'inset-y-0'}
     ${isOpen ? 'translate-x-0' : '-translate-x-full'}
   `;
 

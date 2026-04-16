@@ -79,7 +79,7 @@ const Avatar = ({ fname, lname, isCurrentUser = false }: { fname: string; lname:
  * Profil-Ansicht zum Anzeigen und Bearbeiten der Nutzer- und Unternehmensdaten
  */
 export default function ProfilPage() {
-  const { userProfile: authUserProfile, userCompany: authUserCompany } = usePortalData();
+  const { userProfile: authUserProfile, userCompany: authUserCompany, impersonating } = usePortalData();
 
   const EDITING_ENABLED = false;
   const [profile, setProfile] = useState<User | null>(authUserProfile ?? null);
@@ -119,7 +119,13 @@ export default function ProfilPage() {
   };
 
   useEffect(() => {
-    // TODO: In impersonation mode, profile and company are provided externally — skip fetch.
+    // In impersonation mode, use the impersonated user/company data directly — skip HubSpot fetch.
+    if (impersonating) {
+      if (authUserProfile) setProfile(authUserProfile);
+      if (authUserCompany) setCompany(authUserCompany);
+      setLoading(false);
+      return;
+    }
 
     let hasCachedData = false;
     const cached = sessionStorage.getItem(getProfileCacheKey());
@@ -144,7 +150,7 @@ export default function ProfilPage() {
 
     // Immer im Hintergrund aktualisieren, mit Loader nur ohne Cache.
     fetchProfileData(!hasCachedData);
-  }, []);
+  }, [impersonating, authUserProfile, authUserCompany]);
 
   const copyCode = async () => {
     if (!company?.invite_code) return;
